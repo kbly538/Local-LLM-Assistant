@@ -56,25 +56,27 @@ def _start_process(
     *,
     cwd: str,
 ) -> subprocess.Popen[bytes]:
-    common_kwargs = {
-        "cwd": cwd,
-        "stdin": subprocess.DEVNULL,
-        "stdout": subprocess.PIPE,
-        "stderr": subprocess.PIPE,
-        "shell": False,
-    }
-
     if os.name == "nt":
-        return subprocess.Popen(
+        return subprocess.Popen[bytes](
             process_args,
+            cwd=cwd,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
+            text=False,
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
-            **common_kwargs,
         )
 
-    return subprocess.Popen(
+    return subprocess.Popen[bytes](
         process_args,
+        cwd=cwd,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=False,
+        text=False,
         start_new_session=True,
-        **common_kwargs,
     )
 
 

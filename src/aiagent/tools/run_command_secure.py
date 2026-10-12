@@ -12,7 +12,7 @@ from pathlib import Path
 from openai.types.chat import ChatCompletionToolUnionParam
 
 from aiagent.tools.result import Result
-from aiagent.utils.execute_process import execute_process
+from aiagent.utils.execute_process_secure import execute_process
 
 SCHEMA_RUN_COMMAND: ChatCompletionToolUnionParam = {
     "type": "function",
