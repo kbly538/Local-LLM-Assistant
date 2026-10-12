@@ -1,0 +1,34 @@
+FROM python:3.12-slim
+
+# Pin uv for reproducible builds. Update deliberately, not implicitly.
+COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /bin/
+
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON_DOWNLOADS=0 \
+    UV_NO_CACHE=1
+
+WORKDIR /build
+
+# Install dependencies only. The live source is mounted read-only at runtime.
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --all-groups --no-install-project
+
+# The sandbox must not run as root.
+RUN groupadd --gid 10001 sandbox \
+    && useradd \
+        --uid 10001 \
+        --gid 10001 \
+        --no-create-home \
+        --shell /usr/sbin/nologin \
+        sandbox
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace/src \
+    HOME=/tmp/home \
+    XDG_CACHE_HOME=/tmp/cache
+
+USER 10001:10001
+WORKDIR /workspace
+ENTRYPOINT []
