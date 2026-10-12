@@ -106,3 +106,18 @@ def truncate_output(
         + f"\n[...{label} truncated at "
         + f"{MAX_OUTPUT_CHARS} characters]"
     )
+
+
+def format_process_result(
+    process: subprocess.CompletedProcess[str],
+) -> Result[str]:
+    output = (
+        f"Exit code: {process.returncode}\n"
+        f"STDOUT:\n{truncate_output(process.stdout or '', label='stdout')}\n"
+        f"STDERR:\n{truncate_output(process.stderr or '', label='stderr')}"
+    )
+
+    if process.returncode != 0:
+        return Result.fail(output)
+
+    return Result.ok(output)
